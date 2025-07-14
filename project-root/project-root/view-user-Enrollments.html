@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eventos</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="view-admin-body">
+    <div class="sidebar">
+      <h2>Events</h2>
+      <br />
+      <img class="profile-pic" src="./img/Man.png" alt="profile" />
+      <h2>Random guy</h2>
+      <div class="role">User</div>
+      <button class="nav-btn">➥ Enrollments</button>
+      <button class="nav-btn" onclick="location.href='view-user.html'">🎓 Events</button>
+      <button class="logout">Logout ↩</button>
+    </div>
+    <table class="event-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Capacity</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="eventTableBody">
+          <!-- Aquí se insertarán los eventos dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user || user.role !== "user") {
+      alert("Acceso denegado.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    // Mostrar nombre y rol
+    document.querySelector(".sidebar h2:nth-of-type(2)").textContent = user.name;
+    document.querySelector(".role").textContent = "Visitor";
+
+    const response = await fetch("http://localhost:3000/events");
+    const events = await response.json();
+
+    const tbody = document.getElementById("eventTableBody");
+    tbody.innerHTML = "";
+
+    events.forEach((event) => {
+      const isFull = event.capacity <= 0;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><img src="./img/Eventos.png" alt="Evento" /></td>
+        <td>${event.name}</td>
+        <td>${event.description}</td>
+        <td>${event.capacity}</td>
+        <td>${new Date(event.date).toLocaleDateString('en-GB')}</td>
+        <td>
+          <button class="${isFull ? 'btn-disabled' : 'btn-enroll'}" ${isFull ? 'disabled' : ''}>
+            ${isFull ? 'Sold out' : 'Enroll'}
+          </button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    document.querySelector(".logout").addEventListener("click", () => {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "index.html";
+    });
+  });
+</script>
+    <script src="./Router.js"></script>
+  </body>
+</html>

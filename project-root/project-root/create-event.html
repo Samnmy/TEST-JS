@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Event</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .main-create {
+        display: flex;
+        height: 100vh;
+      }
+
+      .create-sidebar {
+        width: 250px;
+        background-color: #f1e4f9;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .create-sidebar img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+      }
+
+      .create-content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fdfdfd;
+      }
+
+      .event-card {
+        max-width: 500px;
+        width: 100%;
+        padding: 40px;
+      }
+
+      .event-card h2 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .event-card input,
+      .event-card textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+
+      .event-card .form-row {
+        display: flex;
+        gap: 10px;
+      }
+
+      .event-card button {
+        padding: 12px 20px;
+        border: none;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .btn-cancel {
+        background: #fff;
+        border: 1px solid #8000ff;
+        color: #8000ff;
+      }
+
+      .btn-cancel:hover {
+        background-color: #f3e8ff;
+      }
+
+      .btn-save {
+        background-color: #8000ff;
+        color: #fff;
+      }
+
+      .btn-save:hover {
+        background-color: #6800cc;
+      }
+
+      .button-group {
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+  </head>
+  <body> 
+      <div class="main-create"> <!-- Create main container  -->
+      <div class="sidebar">
+        <h2>EVENTS</h2>
+        <br />
+        <img class="profile-pic" src="./img/Man.png" alt="profile" />
+        <h2 id="userName">Random guy</h2>
+        <div class="role" id="userRole">Admin</div>
+        <button class="nav-btn">🎓 Events</button>
+        <button class="logout">Logout ↩</button>
+      </div>
+
+      <div class="create-content">
+        <div class="event-card">
+          <h2>Create Event</h2>
+          <input type="text" id="eventName" placeholder="Name" required />
+          <textarea
+            id="eventDesc"
+            rows="3"
+            placeholder="Description"
+            required
+          ></textarea>
+          <div class="form-row">
+            <input type="date" id="eventDate" required />
+            <input
+              type="number"
+              id="eventCap"
+              placeholder="Capacity"
+              required
+            />
+          </div>
+          <div class="button-group">
+            <button
+              class="btn-cancel"
+              onclick="window.location.href='view-admin.html'"
+            >
+              Cancel
+            </button>
+            <button class="btn-save" id="saveEvent">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const user = JSON.parse(localStorage.getItem("loggedInUser")); // Retrieve user data from localStorage
+      if (!user) {
+        alert("Debes iniciar sesión.");
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("userName").textContent = user.name; // Display user name
+        document.getElementById("userRole").textContent = user.role; // Display user role
+      }
+
+      document.querySelector(".logout").addEventListener("click", () => { // Logout functionality
+        localStorage.removeItem("loggedInUser");  // Remove user data from localStorage
+        window.location.href = "index.html";  // Redirect to login page
+      });
+
+      document // Event listener for the Save button
+        .getElementById("saveEvent")  // Add click event to the Save button
+        .addEventListener("click", async () => {    // Function to save the event
+          const name = document.getElementById("eventName").value.trim();  // Get event name
+          const description = document.getElementById("eventDesc").value.trim();  // Get event description
+          const capacity = parseInt(document.getElementById("eventCap").value); // Get event capacity
+          const date = document.getElementById("eventDate").value;  // Get event date
+
+          if (!name || !description || !capacity || !date) {  // Validate input fields
+            alert("Por favor completa todos los campos.");  // Show alert if fields are empty
+            return;   // Exit if validation fails
+          }
+
+          const newEvent = { name, description, capacity, date }; // Create new event object
+
+          const res = await fetch("http://localhost:3000/events", { // Send POST request to create a new event
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newEvent),
+          });
+
+          if (res.ok) {
+            alert("Evento creado con éxito.");
+            window.location.href = "view-admin.html";
+          } else {
+            alert("Error al guardar el evento.");
+          }
+        });
+    </script>
+  </body>
+</html>

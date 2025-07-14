@@ -1,0 +1,83 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Juan",
+      "email": "Juan@example.com",
+      "password": "123456",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "name": "Jane",
+      "email": "jane.@example.com",
+      "password": "123456",
+      "role": "user"
+    },
+    {
+      "name": "Carlos",
+      "email": "Carlos@example.com",
+      "password": "123456",
+      "role": "user",
+      "id": 3
+    },
+    {
+      "name": "Maria",
+      "email": "Mar@example.com",
+      "password": "123456",
+      "role": "user",
+      "id": 4
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "name": "Evento 1",
+      "description": "Descripción del Evento 1",
+      "capacity": 100,
+      "date": "2023-10-01"
+    },
+    {
+      "id": 2,
+      "name": "Evento 2",
+      "description": "Descripción del Evento 2",
+      "capacity": 200,
+      "date": "2023-10-02"
+    },
+    {
+      "id": 3,
+      "name": "Evento 3",
+      "description": "Descripción del Evento 3",
+      "capacity": 300,
+      "date": "2023-10-03"
+    },
+    {
+      "id": 4,
+      "name": "Evento 4",
+      "description": "Descripción del Evento 4",
+      "capacity": 400,
+      "date": "2023-10-04"
+    },
+    {
+      "id": 5,
+      "name": "Evento 5",
+      "description": "Descripción del Evento 5",
+      "capacity": 500,
+      "date": "2023-10-05"
+    },
+    {
+      "name": "Carlos",
+      "description": "aasas",
+      "date": "2000-12-12",
+      "capacity": 20,
+      "id": 6
+    }
+  ],
+  "enrollments": [
+    {
+      "id": 1,
+      "userId": 2,
+      "eventId": 1
+    }
+  ]
+}

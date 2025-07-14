@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Eventos</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="view-admin-body">
+    <div class="sidebar">
+      <h2>EVENTS</h2>
+      <br />
+      <img class="profile-pic" src="./img/Man.png" alt="profile" />
+      <h2>Random guy</h2>
+      <div class="role">Admin</div>
+      <button class="nav-btn">🎓 Events</button>
+      <button class="logout">Logout ↩</button>
+    </div>
+
+    <div class="main-content">
+      <div class="top-bar">
+        <div
+          class="edit-form"
+          style="
+            display: none;
+            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            max-width: 600px;
+          "
+        >
+          <h2 style="margin-bottom: 20px; text-align: center">Editar Evento</h2>
+          <input type="hidden" id="editId" />
+
+          <input
+            type="text"
+            id="editName"
+            placeholder="Nombre del evento"
+            class="styled-input"
+          />
+          <textarea
+            id="editDesc"
+            placeholder="Descripción"
+            rows="3"
+            class="styled-input"
+          ></textarea>
+
+          <div style="display: flex; gap: 10px">
+            <input type="date" id="editDate" class="styled-input" />
+            <input
+              type="number"
+              id="editCap"
+              placeholder="Capacidad"
+              class="styled-input"
+            />
+          </div>
+
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-top: 20px;
+            "
+          >
+            <button id="updateEvent" class="btn-save">Actualizar</button>
+            <button
+              onclick="document.querySelector('.edit-form').style.display='none'"
+              class="btn-cancel"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+        <button
+          onclick="window.location.href='create-event.html'"
+          class="add-event-btn"
+        >
+          ADD NEW EVENT
+        </button>
+      </div>
+
+      <table class="event-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Capacity</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="eventTableBody">
+          <!-- Aquí se insertarán los eventos dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => { // Wait for the DOM to load
+        const user = JSON.parse(localStorage.getItem("loggedInUser"));  // Get the logged in user
+
+        if (!user) {  // If no user is logged in
+          alert("Debes iniciar sesión para acceder al panel."); // Show alert
+          window.location.href = "index.html";  // Redirect to login page
+          return;
+        }
+
+        // show user info in sidebar
+        document.querySelector(".sidebar h2:nth-of-type(2)").textContent =    
+          user.name;
+        document.querySelector(".role").textContent = user.role;  // Display user role
+
+        // Logout
+        document.querySelector(".logout").addEventListener("click", () => { // Add event listener for logout button
+          localStorage.removeItem("loggedInUser");  // Remove user data from localStorage
+          window.location.href = "index.html";  // Redirect to login page
+        });
+      });
+    </script>
+    <script>
+      async function loadEvents() {
+        const response = await fetch("http://localhost:3000/events"); // Fetch all events
+        const events = await response.json();  // Parse the JSON response
+
+        const tbody = document.getElementById("eventTableBody");  // Get the table body
+        tbody.innerHTML = "";
+
+        // Add each event to the table
+        document.querySelectorAll(".edit-btn").forEach((btn) => {   // Add event listener to each edit button
+          btn.addEventListener("click", async (e) => {    
+            const id = e.target.dataset.id; // Get the event ID from the button data attribute
+            const res = await fetch(`http://localhost:3000/events/${id}`);  // Fetch the event data by ID
+            const data = await res.json();  // Parse the JSON response
+
+            document.querySelector(".edit-form").style.display = "block"; // Show the edit form
+            document.getElementById("editId").value = data.id;  // Set the event ID in the edit form
+            document.getElementById("editName").value = data.name;  // Set the event name in the edit form
+            document.getElementById("editDesc").value = data.description; // Set the event description in the edit form
+            document.getElementById("editDate").value = data.date;  // Set the event date in the edit form
+            document.getElementById("editCap").value = data.capacity; // Set the event capacity in the edit form
+          });
+        });
+
+        events.forEach((event) => {  // Loop through each event
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td><img src="./img/Eventos.png" alt="Evento" /></td>
+          <td>${event.name}</td>
+          <td>${event.description}</td>
+          <td>${event.capacity}</td>
+          <td>${new Date(event.date).toLocaleDateString()}</td>
+          <td class="actions">
+            <span class="edit-btn" data-id="${event.id}">✏️</span>
+            <span class="delete-btn" data-id="${event.id}">🗑️</span>
+          </td>
+        `;
+          tbody.appendChild(row);    // Append the row to the table body
+
+          // EDIT
+          row
+            .querySelector(".edit-btn") // Add event listener for edit button
+            .addEventListener("click", async (e) => {     
+              const id = e.target.dataset.id; // Get the event ID from the button data attribute
+              const res = await fetch(`http://localhost:3000/events/${id}`);  // Fetch the event data by ID
+              const data = await res.json();  // Parse the JSON response
+
+              document.querySelector(".edit-form").style.display = "block"; // Show the edit form
+              document.getElementById("editId").value = data.id;  // Set the event ID in the edit form
+              document.getElementById("editName").value = data.name;  // Set the event name in the edit form
+              document.getElementById("editDesc").value = data.description; // Set the event description in the edit form
+              document.getElementById("editDate").value = data.date;  // Set the event date in the edit form
+              document.getElementById("editCap").value = data.capacity; // Set the event capacity in the edit form
+            });
+
+          // DELETE
+          row
+            .querySelector(".delete-btn") // Add event listener for delete button
+            .addEventListener("click", async (e) => { 
+              const id = e.target.dataset.id; // Get the event ID from the button data attribute
+              const confirmDelete = confirm(  
+                "¿Estás seguro de que deseas eliminar este evento?"
+              );
+              if (!confirmDelete) return;
+
+              const res = await fetch(`http://localhost:3000/events/${id}`, {
+                method: "DELETE",
+              });
+
+              if (res.ok) {
+                alert("Evento eliminado.");
+                loadEvents(); // Reload the events after deletion
+              } else {
+                alert("Error al eliminar el evento.");
+              }
+            });
+        });
+      }
+
+      document
+        .getElementById("updateEvent") // Event listener for the Update button
+        .addEventListener("click", async () => {
+          const id = document.getElementById("editId").value;
+          const name = document.getElementById("editName").value.trim();
+          const description = document.getElementById("editDesc").value.trim();
+          const date = document.getElementById("editDate").value;
+          const capacity = parseInt(document.getElementById("editCap").value);
+
+          if (!name || !description || !date || !capacity) {  // Validate input fields
+            alert("Por favor completa todos los campos.");
+            return;
+          }
+
+          const updatedEvent = { name, description, date, capacity };  // Create the updated event object
+
+          const res = await fetch(`http://localhost:3000/events/${id}`, {  // Send a PUT request to update the event
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedEvent),
+          });
+
+          if (res.ok) {
+            alert("Evento actualizado correctamente.");
+            document.querySelector(".edit-form").style.display = "none";
+            loadEvents(); // Recarga la lista
+          } else {
+            alert("Error al actualizar el evento.");
+          }
+        });
+
+      document.addEventListener("DOMContentLoaded", loadEvents); // Load events when the DOM is ready
+    </script>
+  </body>
+</html>
