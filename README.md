@@ -7,10 +7,10 @@ Welcome to **EventManager SPA**, a dynamic and modern web application for **even
 
 ## 🧑‍💻 Developer Information
 
-- **Name:** [Your Name Here]
-- **Clan:** [Clan Name]
-- **Email:** [youremail@domain.com]
-- **ID Number:** [ID #######]
+- **Name:** Samuel Monsalve Orrego .   
+- **Clan:** Gosling .  
+- **Email:** samuel.mosnsalve.orrego@gmail.com .  
+- **ID Number:** 1.013.458.915 .  
 
 ---
 
